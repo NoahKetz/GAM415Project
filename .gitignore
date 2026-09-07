@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.sln
+*.VC.db
+*.VC.opendb
+
+# Unreal generated folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Build files
+Build/
+
+# Rider / JetBrains
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db

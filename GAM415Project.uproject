@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{590475A9-4966-4EF1-608F-8489E91BE2CC}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "GAM415Project",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		}
+	]
+}
