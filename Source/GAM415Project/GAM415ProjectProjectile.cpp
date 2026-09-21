@@ -9,6 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 
 AGAM415ProjectProjectile::AGAM415ProjectProjectile()
@@ -25,7 +27,7 @@ AGAM415ProjectProjectile::AGAM415ProjectProjectile()
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
 	RootComponent = CollisionComp;
 
-	// Visible projectile mesh created through C++.
+	// Makes the projectile mesh.
 	BallMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
 	BallMesh->SetupAttachment(CollisionComp);
 	BallMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -47,7 +49,7 @@ void AGAM415ProjectProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Generate one color that will be shared by the projectile and decal.
+	// Makes a random color for the projectile.
 	RandColor = FLinearColor(
 		FMath::FRandRange(0.0f, 1.0f),
 		FMath::FRandRange(0.0f, 1.0f),
@@ -58,12 +60,16 @@ void AGAM415ProjectProjectile::BeginPlay()
 	if (ProjectileMaterial && BallMesh)
 	{
 		ProjectileDMI =
-			UMaterialInstanceDynamic::Create(ProjectileMaterial, this);
+			UMaterialInstanceDynamic::Create(
+				ProjectileMaterial,
+				this
+			);
 
 		if (ProjectileDMI)
 		{
 			BallMesh->SetMaterial(0, ProjectileDMI);
 
+			// Gives the projectile its random color.
 			ProjectileDMI->SetVectorParameterValue(
 				TEXT("ProjColor"),
 				RandColor
@@ -87,7 +93,7 @@ void AGAM415ProjectProjectile::OnHit(
 	{
 		if (SplatMaterial)
 		{
-			// Randomly chooses one of the four splat frames.
+			// Picks a random splat.
 			const float FrameNumber =
 				static_cast<float>(FMath::RandRange(0, 3));
 
@@ -108,7 +114,7 @@ void AGAM415ProjectProjectile::OnHit(
 
 				if (DecalDMI)
 				{
-					// Matches the decal color to the projectile color.
+					// Makes the splat match the projectile color.
 					DecalDMI->SetVectorParameterValue(
 						TEXT("Color"),
 						RandColor
@@ -119,6 +125,32 @@ void AGAM415ProjectProjectile::OnHit(
 						FrameNumber
 					);
 				}
+			}
+		}
+
+		// Spawns the particle effect when the projectile hits.
+		if (SplatParticleSystem)
+		{
+			UNiagaraComponent* ParticleComp =
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+					GetWorld(),
+					SplatParticleSystem,
+					Hit.ImpactPoint + Hit.ImpactNormal * 2.0f,
+					Hit.ImpactNormal.Rotation(),
+					FVector(1.0f),
+					true,
+					false
+				);
+
+			if (ParticleComp)
+			{
+				// Makes the particles match the projectile color.
+				ParticleComp->SetVariableLinearColor(
+					FName("User.RandColor"),
+					RandColor
+				);
+
+				ParticleComp->Activate();
 			}
 		}
 

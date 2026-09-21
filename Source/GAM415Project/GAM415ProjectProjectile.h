@@ -11,6 +11,7 @@ class UProjectileMovementComponent;
 class UStaticMeshComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
+class UNiagaraSystem;
 
 UCLASS(config = Game)
 class AGAM415ProjectProjectile : public AActor
@@ -40,6 +41,11 @@ class AGAM415ProjectProjectile : public AActor
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* ProjectileDMI;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = Effects)
+	UNiagaraSystem* SplatParticleSystem;
+
 
 	/** Stores one random color so the projectile and decal can share it */
 	FLinearColor RandColor;
