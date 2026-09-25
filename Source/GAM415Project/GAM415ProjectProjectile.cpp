@@ -11,6 +11,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "PerlinProcTerrain.h"
 
 
 AGAM415ProjectProjectile::AGAM415ProjectProjectile()
@@ -91,6 +92,16 @@ void AGAM415ProjectProjectile::OnHit(
 		(OtherActor != this) &&
 		(OtherComp != nullptr))
 	{
+		// Checks if the projectile hit the procedural terrain.
+		APerlinProcTerrain* Terrain =
+			Cast<APerlinProcTerrain>(OtherActor);
+
+		if (Terrain)
+		{
+			// Changes the terrain where the projectile hit.
+			Terrain->AlterMesh(Hit.ImpactPoint);
+		}
+
 		if (SplatMaterial)
 		{
 			// Picks a random splat.
